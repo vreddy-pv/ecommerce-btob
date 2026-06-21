@@ -199,6 +199,15 @@ async def chat(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.post("/chat/send", response_model=ChatResponse)
+async def chat_send(
+    request: ChatRequest,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(get_current_user)
+):
+    """Alias for /chat endpoint - matches /api/chat/** gateway route."""
+    return await chat(request, credentials)
+
+
 @app.post("/chat/direct")
 async def chat_direct(request: ChatRequest):
     """

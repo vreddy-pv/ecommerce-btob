@@ -63,18 +63,26 @@ def decode_jwt(token: str) -> Optional[Dict]:
         return None
 
 
-async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Header(None)) -> Optional[Dict]:
+async def get_current_user(authorization: Optional[str] = Header(None)) -> Optional[HTTPAuthorizationCredentials]:
     """
     Extract and validate JWT from Authorization header.
-    Returns user payload if valid, raises HTTPException otherwise.
+    Returns credentials if valid, raises HTTPException otherwise.
     """
-    if not credentials:
+    if not authorization:
         raise HTTPException(
             status_code=401,
             detail="Missing Authorization header"
         )
 
-    token = credentials.credentials
+    # Extract token from "Bearer <token>"
+    parts = authorization.split()
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid Authorization header format"
+        )
+
+    token = parts[1]
     payload = decode_jwt(token)
 
     if not payload:
@@ -83,7 +91,7 @@ async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] =
             detail="Invalid or expired token"
         )
 
-    return payload
+    return HTTPAuthorizationCredentials(scheme="Bearer", credentials=token)
 
 
 def get_account_id_from_token(token: str) -> Optional[str]:

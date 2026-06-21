@@ -23,7 +23,7 @@ export interface ChatResponse {
 export class ChatService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = '/api/chat';
+  private apiUrl = '/api/chat/send';
 
   chat(messages: ChatMessage[], sessionId?: string): Observable<ChatResponse> {
     const token = this.authService.token();
