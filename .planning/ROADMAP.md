@@ -33,17 +33,17 @@ Plans:
 ### Phase 2: Angular Frontend
 **Goal**: Build B2B dashboard showing parts catalog with search/filter and recent orders table
 **Depends on**: Phase 1
-**Requirements**: (UI requirements derived from catalog and order features)
+**Requirements**: [CATALOG-01, CATALOG-02, CATALOG-03, ORDER-01, ORDER-02, ORDER-03]
 **Success Criteria** (what must be TRUE):
   1. Dashboard displays auto parts catalog with search and filtering capabilities
   2. Recent orders table shows order history with status indicators
   3. User can navigate between catalog and order views
-**Plans**: TBD
+**Plans:** 3 plans
 
 Plans:
-- [ ] 02-01: Angular project setup and routing
-- [ ] 02-02: Catalog browsing components
-- [ ] 02-03: Order management components
+- [ ] 02-01-PLAN.md — Angular project setup, core services, auth shell, routing, gateway CORS
+- [ ] 02-02-PLAN.md — Catalog browsing components (search, filter, tier pricing)
+- [ ] 02-03-PLAN.md — Order management components (cart, orders table, order detail)
 
 ### Phase 3: MCP Server Integration
 **Goal**: Implement MCP Server with check_order_status and create_b2b_order tools for AI agent
