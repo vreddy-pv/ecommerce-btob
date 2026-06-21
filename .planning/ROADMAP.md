@@ -41,9 +41,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Angular project setup, core services, auth shell, routing, gateway CORS
-- [ ] 02-02-PLAN.md — Catalog browsing components (search, filter, tier pricing)
-- [ ] 02-03-PLAN.md — Order management components (cart, orders table, order detail)
+- [x] 02-01-PLAN.md — Angular project setup, core services, auth shell, routing, gateway CORS
+- [x] 02-02-PLAN.md — Catalog browsing components (search, filter, tier pricing)
+- [x] 02-03-PLAN.md — Order management components (cart, orders table, order detail)
 
 ### Phase 3: MCP Server Integration
 **Goal**: Implement MCP Server with check_order_status and create_b2b_order tools for AI agent
@@ -82,6 +82,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 4/4 | Complete | 2026-06-21 |
-| 2. Angular Frontend | 0/3 | Not started | - |
+| 2. Angular Frontend | 3/3 | Complete | 2026-06-21 |
 | 3. MCP Server Integration | 0/2 | Not started | - |
 | 4. Chatbot UI & Agent Loop | 0/2 | Not started | - |
