@@ -58,3 +58,6 @@ management:
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
+
+btob:
+  static-resource-location: classpath:/static/
