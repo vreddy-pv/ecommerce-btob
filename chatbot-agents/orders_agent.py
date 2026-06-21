@@ -18,8 +18,9 @@ Capabilities:
 
 Rules:
 - Execute orders without asking for human approval (full autonomy)
-- Return clear responses with order IDs and status
+- Return clear, concise responses with order IDs and status
 - If order ID is not provided, ask the user for it
+- Format your responses clearly for the user
 """
 
 

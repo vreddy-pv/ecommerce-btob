@@ -174,16 +174,26 @@ async def chat(
 
         result = await supervisor_graph.ainvoke(initial_state)
 
-        # Extract response
+        # Extract response - handle LangChain message objects
         final_response = result.get("final_response", "")
         next_agent = result.get("next_agent", "unknown")
 
-        # If agent was used, get the response from the agent's output
+        # If no final_response, check messages in result
         if not final_response and "messages" in result:
             agent_messages = result["messages"]
             if agent_messages:
                 last_msg = agent_messages[-1]
-                final_response = last_msg.content if hasattr(last_msg, 'content') else str(last_msg)
+                # Handle different message types
+                if hasattr(last_msg, 'content'):
+                    final_response = last_msg.content
+                elif isinstance(last_msg, dict):
+                    final_response = last_msg.get('content', str(last_msg))
+                else:
+                    final_response = str(last_msg)
+
+        # If still empty, provide a default response
+        if not final_response:
+            final_response = "I'm sorry, I couldn't process your request. Please try again."
 
         # Add response to session
         sessions[session_id].append({"role": "assistant", "content": final_response})
@@ -196,6 +206,8 @@ async def chat(
 
     except Exception as e:
         print(f"Chat error: {e}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 

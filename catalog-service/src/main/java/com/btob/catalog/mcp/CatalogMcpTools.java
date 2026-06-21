@@ -36,7 +36,7 @@ public class CatalogMcpTools {
     @Tool(description = "Search for auto parts products by name or SKU. Optionally filter by category. Returns list of products with SKU, name, price, and inventory levels.")
     public List<Map<String, Object>> search_products(
             @ToolParam(description = "Search term (product name or SKU)") String query,
-            @ToolParam(description = "Optional category filter") String category) {
+            @ToolParam(description = "Optional category filter", required = false) String category) {
 
         log.info("MCP Tool called: search_products(query={}, category={})", query, category);
 
