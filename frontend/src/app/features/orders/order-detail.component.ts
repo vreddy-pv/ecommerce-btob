@@ -37,44 +37,45 @@ import { OrderResponse } from '../../core/models/api.models';
           Back to Orders
         </a>
       </div>
-    } @else if (order(); as o) {
-      <div class="order-detail">
-        <div class="detail-header">
-          <a mat-button routerLink="/orders" class="back-btn">
-            <mat-icon>arrow_back</mat-icon>
-            Back to Orders
-          </a>
-          <h2>Order Details</h2>
-        </div>
-
-        <div class="order-card">
-          <div class="order-info">
-            <div class="info-row">
-              <span class="label">Order ID</span>
-              <span class="value">{{ o.id }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Date Placed</span>
-              <span class="value">{{ o.createdAt | date:'medium' }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">Status</span>
-              <app-status-chip [status]="o.status" />
-            </div>
-            <div class="info-row">
-              <span class="label">Total Amount</span>
-              <span class="value total">{{ o.totalAmount | currency }}</span>
-            </div>
-            @if (o.creditUsed > 0) {
-              <div class="info-row">
-                <span class="label">Credit Used</span>
-                <span class="value">{{ o.creditUsed | currency }}</span>
-              </div>
-            }
+    } @else {
+      @if (order(); as o) {
+        <div class="order-detail">
+          <div class="detail-header">
+            <a mat-button routerLink="/orders" class="back-btn">
+              <mat-icon>arrow_back</mat-icon>
+              Back to Orders
+            </a>
+            <h2>Order Details</h2>
           </div>
 
-          <h3>Line Items</h3>
-          <table mat-table [dataSource]="o.items" class="items-table">
+          <div class="order-card">
+            <div class="order-info">
+              <div class="info-row">
+                <span class="label">Order ID</span>
+                <span class="value">{{ o.id }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Date Placed</span>
+                <span class="value">{{ o.createdAt | date:'medium' }}</span>
+              </div>
+              <div class="info-row">
+                <span class="label">Status</span>
+                <app-status-chip [status]="o.status" />
+              </div>
+              <div class="info-row">
+                <span class="label">Total Amount</span>
+                <span class="value total">{{ o.totalAmount | currency }}</span>
+              </div>
+              @if (o.creditUsed > 0) {
+                <div class="info-row">
+                  <span class="label">Credit Used</span>
+                  <span class="value">{{ o.creditUsed | currency }}</span>
+                </div>
+              }
+            </div>
+
+            <h3>Line Items</h3>
+            <table mat-table [dataSource]="o.items" class="items-table">
             <ng-container matColumnDef="sku">
               <th mat-header-cell *matHeaderCellDef scope="col">SKU</th>
               <td mat-cell *matCellDef="let item">{{ item.productSku }}</td>
@@ -105,6 +106,7 @@ import { OrderResponse } from '../../core/models/api.models';
           </table>
         </div>
       </div>
+      }
     }
   `,
   styles: [`

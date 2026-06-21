@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { CatalogComponent } from './catalog.component';
 
-// Stub catalog routes — populated by plan 02-02
-export const catalogRoutes: Routes = [];
+export const catalogRoutes: Routes = [
+  { path: '', component: CatalogComponent },
+];

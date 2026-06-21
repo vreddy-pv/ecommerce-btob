@@ -1,4 +1,5 @@
 import { Component, input, computed, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -10,7 +11,7 @@ import { CartService } from '../../core/services/cart.service';
 @Component({
   selector: 'app-product-card',
   standalone: true,
-  imports: [MatCardModule, MatButtonModule, MatBadgeModule, MatSnackBarModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatBadgeModule, MatSnackBarModule, MatIconModule],
   template: `
     <mat-card class="product-card">
       <div class="product-image">
