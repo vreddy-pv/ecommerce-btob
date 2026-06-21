@@ -148,9 +148,9 @@ Exceptions: none
 
 **Product Card Layout:**
 - Product image (placeholder if none)
-- Part name (Heading, 16px, 500)
+- Part name (Label, 14px, 500 weight)
 - SKU (Label, 12px, grey)
-- Price (Body, 14px, 600 weight, accent color for tier pricing)
+- Price (Body, 14px, 500 weight, accent color for tier pricing)
 - Inventory level (Label, 12px, green/red based on stock)
 
 ### Orders View (ORDER-01, ORDER-02, ORDER-03)
