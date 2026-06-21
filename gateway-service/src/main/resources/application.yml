@@ -4,57 +4,31 @@ server:
 spring:
   application:
     name: api-gateway
-
   cloud:
+    compatibility-verifier:
+      enabled: false
     gateway:
       routes:
         - id: account-service
-          uri: lb://ACCOUNT-SERVICE
+          uri: http://account-service:8081
           predicates:
-            - Path=/api/accounts/**
+            - Path=/api/accounts/**, /api/auth/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=0
 
         - id: catalog-service
-          uri: lb://CATALOG-SERVICE
+          uri: http://catalog-service:8082
           predicates:
             - Path=/api/catalog/**
           filters:
-            - StripPrefix=1
+            - StripPrefix=0
 
         - id: order-service
-          uri: lb://ORDER-SERVICE
+          uri: http://order-service:8083
           predicates:
             - Path=/api/orders/**
           filters:
-            - StripPrefix=1
-
-      default-filters:
-        - DedupeResponseHeader=Access-Control-Allow-Origin
-
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders: "*"
-
-    discovery:
-      enabled: true
-      service-url:
-        defaultZone: http://localhost:8761/eureka/
-
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
+            - StripPrefix=0
 
 management:
   endpoints:
@@ -66,3 +40,7 @@ management:
       show-details: always
     gateway:
       enabled: true
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG

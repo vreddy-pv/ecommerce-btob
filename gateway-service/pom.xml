@@ -12,23 +12,25 @@
 
     <artifactId>gateway-service</artifactId>
     <name>Gateway Service</name>
-    <description>API Gateway with routing, JWT validation, and service discovery</description>
+    <description>API Gateway with routing and JWT validation</description>
 
     <dependencies>
-        <!-- Spring Cloud Gateway (WebFlux-based, NOT spring-boot-starter-web) -->
+        <!-- Spring Cloud Gateway -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
         </dependency>
+
+        <!-- Load Balancer -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!-- Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <!-- Spring Cloud -->
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>
 
         <!-- JWT -->
