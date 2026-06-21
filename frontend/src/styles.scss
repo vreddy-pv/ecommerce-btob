@@ -1,0 +1,73 @@
+/* Global styles - MD3 Design System */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* MD3 Color Variables (from UI-SPEC) */
+:root {
+  /* Primary palette */
+  --md-sys-color-primary: #1976D2;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #BBDEFB;
+  --md-sys-color-on-primary-container: #004881;
+
+  /* Secondary palette */
+  --md-sys-color-secondary: #F5F5F5;
+  --md-sys-color-on-secondary: #1C1B1F;
+  --md-sys-color-secondary-container: #E8E8E8;
+
+  /* Surface / Background */
+  --md-sys-color-surface: #FFFFFF;
+  --md-sys-color-on-surface: #1C1B1F;
+  --md-sys-color-surface-variant: #F5F5F5;
+  --md-sys-color-background: #FFFFFF;
+
+  /* Error / Destructive */
+  --md-sys-color-error: #D32F2F;
+  --md-sys-color-on-error: #FFFFFF;
+
+  /* Status colors (semantic) */
+  --status-pending: #F9A825;
+  --status-confirmed: #1976D2;
+  --status-shipped: #1976D2;
+  --status-delivered: #388E3C;
+  --status-error: #D32F2F;
+
+  /* Tier colors */
+  --tier-standard: #9E9E9E;
+  --tier-silver: #BDBDBD;
+  --tier-gold: #FFD700;
+  --tier-platinum: #7B1FA2;
+}
+
+/* Typography scale */
+h1, .display-large {
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+h2, .headline {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.body-large {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Spacing utilities */
+.sp-xs { padding: 4px; }
+.sp-sm { padding: 8px; }
+.sp-md { padding: 16px; }
+.sp-lg { padding: 24px; }
+.sp-xl { padding: 32px; }
