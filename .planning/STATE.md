@@ -18,17 +18,19 @@ See: .planning/PROJECT.md (updated 2026-06-21)
 | 2026-06-21 | Phase 1 plans created | 1 | .planning/phases/01-backend-foundation/01-01-PLAN.md through 01-04-PLAN.md |
 | 2026-06-21 | Plan 01-01 completed | 1 | .planning/phases/01-backend-foundation/01-01-SUMMARY.md |
 | 2026-06-21 | Plan 01-02 completed | 1 | .planning/phases/01-backend-foundation/01-02-SUMMARY.md |
+| 2026-06-21 | Plan 01-03 completed | 1 | .planning/phases/01-backend-foundation/01-03-SUMMARY.md |
+| 2026-06-21 | Plan 01-04 completed | 1 | .planning/phases/01-backend-foundation/01-04-SUMMARY.md |
 
 ## Current State
 
-**Phase 1 Status**: Plan 01-02 complete, ready for Plan 01-03
+**Phase 1 Status**: All plans complete, ready for Phase 2
 **Blocking Issues**: None
-**Last Activity**: 2026-06-21 - Plan 01-02 executed (2 tasks, 15 files created)
+**Last Activity**: 2026-06-21 - Plan 01-04 executed (2 tasks, 15 files created)
 
 ## Resumed From
 
-- **Last stopped at**: Plan 01-02 complete
-- **Next plan**: .planning/phases/01-backend-foundation/01-03-PLAN.md
+- **Last stopped at**: Plan 01-04 complete
+- **Next plan**: Phase 2 planning
 
 ## Decisions
 
@@ -39,6 +41,9 @@ See: .planning/PROJECT.md (updated 2026-06-21)
 - Configured 24-hour JWT expiration for session persistence
 - Implemented BCrypt password hashing for security
 - Created CustomUserDetailsService for JWT authentication integration
+- Used static initialization block for product data maps (Map.of() limit is 10 entries)
+- Implemented mock product validation in OrderService (catalog-service integration deferred)
+- Used StreamBridge for event publishing via Spring Cloud Stream
 
 ## Metrics
 
@@ -46,3 +51,5 @@ See: .planning/PROJECT.md (updated 2026-06-21)
 |------|----------|-------|-------|---------|
 | 01-01 | 12min | 3 | 23 | 3 |
 | 01-02 | 8min | 2 | 15 | 2 |
+| 01-03 | 15min | 2 | 12 | 2 |
+| 01-04 | 12min | 2 | 15 | 2 |

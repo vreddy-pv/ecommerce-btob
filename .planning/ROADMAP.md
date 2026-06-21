@@ -27,8 +27,8 @@ This roadmap builds a B2B auto parts e-commerce platform with Spring Boot micros
 Plans:
 - [x] 01-01-PLAN.md — Domain model and database schema design
 - [x] 01-02-PLAN.md — Account and authentication microservice
-- [ ] 01-03-PLAN.md — Catalog microservice
-- [ ] 01-04-PLAN.md — Order microservice
+- [x] 01-03-PLAN.md — Catalog microservice
+- [x] 01-04-PLAN.md — Order microservice
 
 ### Phase 2: Angular Frontend
 **Goal**: Build B2B dashboard showing parts catalog with search/filter and recent orders table
@@ -81,7 +81,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Backend Foundation | 2/4 | In Progress | - |
+| 1. Backend Foundation | 4/4 | Complete | 2026-06-21 |
 | 2. Angular Frontend | 0/3 | Not started | - |
 | 3. MCP Server Integration | 0/2 | Not started | - |
 | 4. Chatbot UI & Agent Loop | 0/2 | Not started | - |
