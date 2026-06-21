@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,8 +9,6 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Subject, Subscription, debounceTime, switchMap, tap, catchError, of, combineLatest } from 'rxjs';
-import { toObservable } from '@angular/core/rxjs-interop';
 
 import { ProductDto, CategoryDto, AccountTier, Page } from '../../core/models/api.models';
 import { CatalogService } from '../../core/services/catalog.service';
@@ -191,7 +189,7 @@ import { ProductCardComponent } from './product-card.component';
     }
   `],
 })
-export class CatalogComponent implements OnInit, OnDestroy {
+export class CatalogComponent implements OnInit {
   private catalogService = inject(CatalogService);
   private authService = inject(AuthService);
 
@@ -231,10 +229,6 @@ export class CatalogComponent implements OnInit, OnDestroy {
     }
   });
 
-  // RxJS subjects for debounced search
-  private searchSubject = new Subject<string>();
-  private subscription: Subscription | null = null;
-
   ngOnInit(): void {
     // Load categories
     this.catalogService.getCategories().subscribe({
@@ -242,53 +236,44 @@ export class CatalogComponent implements OnInit, OnDestroy {
       error: () => {}, // silently fail - categories are optional
     });
 
-    // Set up debounced search pipeline
-    this.subscription = combineLatest([
-      this.searchSubject.pipe(debounceTime(300)),
-      toObservable(this.selectedCategoryId),
-      toObservable(this.pageIndex),
-      toObservable(this.pageSize),
-    ]).pipe(
-      tap(() => this.loading.set(true)),
-      tap(() => this.error.set(null)),
-      switchMap(([searchTerm, categoryId, page, size]) =>
-        this.catalogService.getProducts(searchTerm || undefined, categoryId || undefined, page, size).pipe(
-          catchError((err) => {
-            this.error.set('Something went wrong loading the catalog. Please try again or contact support.');
-            this.loading.set(false);
-            return of(null);
-          }),
-        )
-      ),
-    ).subscribe({
+    // Load products
+    this.loadProducts();
+  }
+
+  private loadProducts(): void {
+    this.loading.set(true);
+    this.error.set(null);
+
+    const searchTerm = this.search() || undefined;
+    const categoryId = this.selectedCategoryId() || undefined;
+    const page = this.pageIndex();
+    const size = this.pageSize();
+
+    this.catalogService.getProducts(searchTerm, categoryId, page, size).subscribe({
       next: (page) => {
-        if (page) {
-          this.products.set(page.content);
-          this.totalElements.set(page.totalElements);
-        }
+        this.products.set(page.content);
+        this.totalElements.set(page.totalElements);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set('Something went wrong loading the catalog. Please try again or contact support.');
         this.loading.set(false);
       },
     });
-
-    // Trigger initial load
-    this.searchSubject.next('');
-  }
-
-  ngOnDestroy(): void {
-    this.subscription?.unsubscribe();
   }
 
   onSearchInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.search.set(value);
     this.pageIndex.set(0); // Reset to first page on new search
-    this.searchSubject.next(value);
+    this.loadProducts();
   }
 
   onCategoryChange(event: any): void {
     const value = event.value || '';
     this.selectedCategoryId.set(value);
     this.pageIndex.set(0);
+    this.loadProducts();
   }
 
   onSortChange(value: 'name' | 'price' | 'sku'): void {
@@ -298,10 +283,10 @@ export class CatalogComponent implements OnInit, OnDestroy {
   onPageChange(event: PageEvent): void {
     this.pageIndex.set(event.pageIndex);
     this.pageSize.set(event.pageSize);
+    this.loadProducts();
   }
 
   reload(): void {
-    this.error.set(null);
-    this.searchSubject.next(this.search());
+    this.loadProducts();
   }
 }
