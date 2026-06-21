@@ -8,6 +8,20 @@ spring:
     compatibility-verifier:
       enabled: false
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/api/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
       routes:
         - id: account-service
           uri: http://account-service:8081
