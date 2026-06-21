@@ -7,8 +7,9 @@ import asyncio
 from contextlib import asynccontextmanager
 from typing import Dict, List, Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -16,6 +17,7 @@ from mcp_client import mcp_manager
 from orders_agent import create_orders_agent
 from catalog_agent import create_catalog_agent
 from supervisor import create_supervisor_graph
+from auth import get_current_user, get_account_id_from_token
 
 load_dotenv()
 
@@ -123,14 +125,18 @@ async def health_check():
             "catalog": catalog_agent is not None,
             "supervisor": supervisor_graph is not None
         },
-        "mcp_servers": list(mcp_manager.clients.keys())
+        "mcp_servers": list(mcp_manager.sessions.keys())
     }
 
 
 @app.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+async def chat(
+    request: ChatRequest,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(get_current_user)
+):
     """
     Main chat endpoint. Routes messages to appropriate agent.
+    Requires valid JWT token in Authorization header.
     """
     if not supervisor_graph:
         raise HTTPException(
@@ -138,8 +144,18 @@ async def chat(request: ChatRequest):
             detail="Chatbot agents not initialized. Check MCP server connections."
         )
 
+    # Extract accountId from JWT
+    token = credentials.credentials if credentials else None
+    account_id = get_account_id_from_token(token) if token else None
+
+    if not account_id:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid token or missing accountId"
+        )
+
     # Get or create session
-    session_id = request.session_id or "default"
+    session_id = request.session_id or account_id
     if session_id not in sessions:
         sessions[session_id] = []
 

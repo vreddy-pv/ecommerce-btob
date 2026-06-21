@@ -51,6 +51,13 @@ spring:
           filters:
             - StripPrefix=0
 
+        - id: chatbot-health
+          uri: http://chatbot-agents:8090
+          predicates:
+            - Path=/api/chatbot/health
+          filters:
+            - StripPrefix=1
+
 management:
   endpoints:
     web:

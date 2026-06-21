@@ -53,11 +53,11 @@ Plans:
   1. MCP tool check_order_status(orderId) returns order status from database
   2. MCP tool create_b2b_order(accountId, items) creates new order and returns order ID
   3. MCP Server is accessible via HTTP/SSE transport
-**Plans**: TBD
+**Plans:** 2 plans
 
 Plans:
-- [ ] 03-01: MCP Server setup and configuration
-- [ ] 03-02: Tool implementation and testing
+- [x] 03-01-PLAN.md — MCP Server setup and configuration
+- [x] 03-02-PLAN.md — Tool implementation and testing
 
 ### Phase 4: Chatbot UI & Agent Loop
 **Goal**: Build chat interface wired to LLM for intent routing to MCP tools
@@ -83,5 +83,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 4/4 | Complete | 2026-06-21 |
 | 2. Angular Frontend | 3/3 | Complete | 2026-06-21 |
-| 3. MCP Server Integration | 0/2 | Not started | - |
+| 3. MCP Server Integration | 2/2 | Complete | 2026-06-21 |
 | 4. Chatbot UI & Agent Loop | 0/2 | Not started | - |

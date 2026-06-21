@@ -21,5 +21,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadChildren: () => import('./features/orders/orders.routes').then(m => m.ordersRoutes),
   },
+  {
+    path: 'chat',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/chat/chat.component').then(m => m.ChatComponent),
+  },
   { path: '**', redirectTo: '/catalog' },
 ];
