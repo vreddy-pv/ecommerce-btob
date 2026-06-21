@@ -4,6 +4,19 @@ server:
 spring:
   application:
     name: account-service
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    discovery:
+      enabled: false
+    stream:
+      bindings:
+        accountUpdated-out-0:
+          destination: account-events
+          content-type: application/json
+      rabbit:
+        binder:
+          addresses: localhost:5672
 
   datasource:
     url: jdbc:postgresql://localhost:5432/account_db
@@ -16,26 +29,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-
-  cloud:
-    discovery:
-      enabled: true
-      service-url:
-        defaultZone: http://localhost:8761/eureka/
-    stream:
-      bindings:
-        accountUpdated-out-0:
-          destination: account-events
-          content-type: application/json
-      rabbit:
-        binder:
-          addresses: localhost:5672
 
   security:
     user:
@@ -46,6 +45,7 @@ eureka:
   instance:
     prefer-ip-address: true
   client:
+    enabled: false
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
