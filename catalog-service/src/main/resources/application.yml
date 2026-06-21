@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: catalog-service
+  ai:
+    mcp:
+      server:
+        name: btob-catalog-mcp-server
+        version: 1.0.0
+        type: SYNC
   cloud:
     compatibility-verifier:
       enabled: false

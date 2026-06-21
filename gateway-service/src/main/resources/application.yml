@@ -44,6 +44,13 @@ spring:
           filters:
             - StripPrefix=0
 
+        - id: chatbot-agents
+          uri: http://chatbot-agents:8090
+          predicates:
+            - Path=/api/chat/**
+          filters:
+            - StripPrefix=0
+
 management:
   endpoints:
     web:
