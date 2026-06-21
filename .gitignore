@@ -1,0 +1,31 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+*.local
+
+# Planning (internal workflow)
+.planning/STATE.md
+.planning/phases/*/01-0*-SUMMARY.md
+.planning/phases/*/01-0*-DRIFT-CHECK.md
