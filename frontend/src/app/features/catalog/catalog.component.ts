@@ -204,7 +204,7 @@ export class CatalogComponent implements OnInit, OnDestroy {
   pageIndex = signal(0);
   pageSize = signal(20);
   totalElements = signal(0);
-  loading = signal(false);
+  loading = signal(true);
   error = signal<string | null>(null);
 
   // Derived
