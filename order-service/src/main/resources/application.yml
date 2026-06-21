@@ -20,6 +20,11 @@ spring:
       rabbit:
         binder:
           addresses: ${RABBITMQ_HOST:localhost}:${RABBITMQ_PORT:5672}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5434}/order_db

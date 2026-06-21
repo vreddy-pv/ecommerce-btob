@@ -51,47 +51,47 @@ public class OrderService {
         Map<String, BigDecimal> prices = new java.util.HashMap<>();
         prices.put("BRK-001", new BigDecimal("29.99"));
         prices.put("BRK-002", new BigDecimal("49.99"));
-        prices.put("ENG-001", new BigDecimal("149.99"));
-        prices.put("ENG-002", new BigDecimal("89.99"));
-        prices.put("ENG-003", new BigDecimal("199.99"));
-        prices.put("ELE-001", new BigDecimal("19.99"));
-        prices.put("ELE-002", new BigDecimal("39.99"));
-        prices.put("ELE-003", new BigDecimal("59.99"));
+        prices.put("BRK-003", new BigDecimal("65.50"));
+        prices.put("BRK-004", new BigDecimal("125.00"));
+        prices.put("BRK-005", new BigDecimal("12.99"));
+        prices.put("ELC-001", new BigDecimal("89.99"));
+        prices.put("ELC-002", new BigDecimal("149.99"));
+        prices.put("ELC-003", new BigDecimal("79.99"));
+        prices.put("ELC-004", new BigDecimal("34.99"));
+        prices.put("ELC-005", new BigDecimal("9.99"));
+        prices.put("ENG-001", new BigDecimal("19.99"));
+        prices.put("ENG-002", new BigDecimal("24.99"));
+        prices.put("ENG-003", new BigDecimal("14.99"));
+        prices.put("ENG-004", new BigDecimal("15.99"));
+        prices.put("ENG-005", new BigDecimal("39.99"));
+        prices.put("FLT-001", new BigDecimal("19.99"));
+        prices.put("FLT-002", new BigDecimal("14.99"));
         prices.put("SUS-001", new BigDecimal("79.99"));
         prices.put("SUS-002", new BigDecimal("119.99"));
         prices.put("SUS-003", new BigDecimal("159.99"));
-        prices.put("FLT-001", new BigDecimal("12.99"));
-        prices.put("FLT-002", new BigDecimal("18.99"));
-        prices.put("FLT-003", new BigDecimal("24.99"));
-        prices.put("FLT-004", new BigDecimal("34.99"));
-        prices.put("BRK-003", new BigDecimal("69.99"));
-        prices.put("ENG-004", new BigDecimal("249.99"));
-        prices.put("ELE-004", new BigDecimal("79.99"));
-        prices.put("SUS-004", new BigDecimal("189.99"));
-        prices.put("FLT-005", new BigDecimal("44.99"));
         PRODUCT_PRICES = java.util.Collections.unmodifiableMap(prices);
 
         Map<String, Integer> inventory = new java.util.HashMap<>();
         inventory.put("BRK-001", 100);
         inventory.put("BRK-002", 75);
-        inventory.put("ENG-001", 30);
-        inventory.put("ENG-002", 50);
-        inventory.put("ENG-003", 25);
-        inventory.put("ELE-001", 200);
-        inventory.put("ELE-002", 150);
-        inventory.put("ELE-003", 100);
+        inventory.put("BRK-003", 80);
+        inventory.put("BRK-004", 45);
+        inventory.put("BRK-005", 200);
+        inventory.put("ELC-001", 60);
+        inventory.put("ELC-002", 40);
+        inventory.put("ELC-003", 55);
+        inventory.put("ELC-004", 120);
+        inventory.put("ELC-005", 300);
+        inventory.put("ENG-001", 250);
+        inventory.put("ENG-002", 180);
+        inventory.put("ENG-003", 150);
+        inventory.put("ENG-004", 400);
+        inventory.put("ENG-005", 90);
+        inventory.put("FLT-001", 350);
+        inventory.put("FLT-002", 280);
         inventory.put("SUS-001", 60);
         inventory.put("SUS-002", 40);
         inventory.put("SUS-003", 35);
-        inventory.put("FLT-001", 300);
-        inventory.put("FLT-002", 250);
-        inventory.put("FLT-003", 200);
-        inventory.put("FLT-004", 150);
-        inventory.put("BRK-003", 80);
-        inventory.put("ENG-004", 20);
-        inventory.put("ELE-004", 70);
-        inventory.put("SUS-004", 30);
-        inventory.put("FLT-005", 120);
         PRODUCT_INVENTORY = java.util.Collections.unmodifiableMap(inventory);
     }
 
@@ -262,30 +262,30 @@ public class OrderService {
     }
 
     /**
-     * Get product name from SKU (mock data).
+     * Get product name from SKU (mock data matching catalog).
      */
     private String getProductName(String sku) {
         return switch (sku) {
-            case "BRK-001" -> "Brake Pad Set - Front";
-            case "BRK-002" -> "Brake Pad Set - Rear";
-            case "BRK-003" -> "Brake Rotor - Front";
-            case "ENG-001" -> "Oil Filter";
-            case "ENG-002" -> "Air Filter";
-            case "ENG-003" -> "Fuel Filter";
-            case "ENG-004" -> "Timing Belt";
-            case "ELE-001" -> "Spark Plug Set";
-            case "ELE-002" -> "Battery Terminal";
-            case "ELE-003" -> "Ignition Coil";
-            case "ELE-004" -> "Alternator";
-            case "SUS-001" -> "Shock Absorber - Front";
-            case "SUS-002" -> "Shock Absorber - Rear";
-            case "SUS-003" -> "Strut Assembly";
-            case "SUS-004" -> "Control Arm";
-            case "FLT-001" -> "Engine Oil Filter";
-            case "FLT-002" -> "Cabin Air Filter";
-            case "FLT-003" -> "Transmission Filter";
-            case "FLT-004" -> "Power Steering Filter";
-            case "FLT-005" -> "Coolant Filter";
+            case "BRK-001" -> "Front Brake Pads";
+            case "BRK-002" -> "Rear Brake Pads";
+            case "BRK-003" -> "Brake Rotors";
+            case "BRK-004" -> "Brake Caliper";
+            case "BRK-005" -> "Brake Fluid";
+            case "ELC-001" -> "Car Battery";
+            case "ELC-002" -> "Alternator";
+            case "ELC-003" -> "Starter Motor";
+            case "ELC-004" -> "Headlights";
+            case "ELC-005" -> "Fuses";
+            case "ENG-001" -> "Spark Plugs";
+            case "ENG-002" -> "Engine Oil";
+            case "ENG-003" -> "Oil Filter";
+            case "ENG-004" -> "Air Filter";
+            case "ENG-005" -> "Timing Belt";
+            case "FLT-001" -> "Cabin Air Filter";
+            case "FLT-002" -> "Fuel Filter";
+            case "SUS-001" -> "Shock Absorbers";
+            case "SUS-002" -> "Struts";
+            case "SUS-003" -> "Control Arms";
             default -> "Unknown Product";
         };
     }
