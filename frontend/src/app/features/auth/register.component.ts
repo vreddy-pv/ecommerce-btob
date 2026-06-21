@@ -6,7 +6,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../core/services/auth.service';
+import { AccountTier } from '../../core/models/api.models';
 
 @Component({
   selector: 'app-register',
@@ -19,6 +21,7 @@ import { AuthService } from '../../core/services/auth.service';
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatSelectModule,
   ],
   template: `
     <div class="register-container">
@@ -64,6 +67,16 @@ import { AuthService } from '../../core/services/auth.service';
               @if (registerForm.controls.password.hasError('minlength') && registerForm.controls.password.touched) {
                 <mat-error>Password must be at least 6 characters</mat-error>
               }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Account Tier</mat-label>
+              <mat-select formControlName="tier">
+                <mat-option value="STANDARD">Standard</mat-option>
+                <mat-option value="SILVER">Silver</mat-option>
+                <mat-option value="GOLD">Gold</mat-option>
+                <mat-option value="PLATINUM">Platinum</mat-option>
+              </mat-select>
             </mat-form-field>
 
             @if (errorMessage()) {
@@ -134,6 +147,7 @@ export class RegisterComponent {
     companyName: ['', [Validators.required]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
+    tier: ['STANDARD' as AccountTier, [Validators.required]],
   });
 
   onSubmit() {
@@ -142,8 +156,8 @@ export class RegisterComponent {
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    const { email, password, companyName } = this.registerForm.value;
-    this.authService.register(email!, password!, companyName!).subscribe({
+    const { email, password, companyName, tier } = this.registerForm.value;
+    this.authService.register(email!, password!, companyName!, tier as AccountTier).subscribe({
       next: () => {
         this.loading.set(false);
         this.router.navigate(['/catalog']);

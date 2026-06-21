@@ -37,8 +37,8 @@ export class AuthService {
     );
   }
 
-  register(email: string, password: string, companyName: string) {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, { email, password, companyName }).pipe(
+  register(email: string, password: string, companyName: string, tier: AccountTier = 'STANDARD') {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/register`, { email, password, companyName, tier }).pipe(
       tap((res) => this.setAuth(res)),
     );
   }
