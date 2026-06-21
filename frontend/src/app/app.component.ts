@@ -8,7 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatBadgeModule } from '@angular/material/badge';
 import { AuthService } from './core/services/auth.service';
+import { CartService } from './core/services/cart.service';
+import { CartSidebarComponent } from './features/orders/cart-sidebar.component';
 import { TierBadgeComponent } from './shared/components/tier-badge.component';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map, shareReplay } from 'rxjs';
@@ -27,7 +30,9 @@ import { map, shareReplay } from 'rxjs';
     MatButtonModule,
     MatMenuModule,
     MatDividerModule,
+    MatBadgeModule,
     TierBadgeComponent,
+    CartSidebarComponent,
   ],
   template: `
     @if (authService.isAuthenticated()) {
@@ -78,15 +83,24 @@ import { map, shareReplay } from 'rxjs';
 
             <span class="toolbar-spacer"></span>
 
-            @if (authService.account(); as account) {
-              <app-tier-badge [tier]="account.tier" />
+            @if (authService.account()) {
+              <button mat-icon-button
+                      (click)="cartSidenav.toggle()"
+                      [matBadge]="cartService.totalItems() > 0 ? cartService.totalItems() : null"
+                      matBadgeColor="accent"
+                      matBadgeSize="small"
+                      aria-label="Open shopping cart">
+                <mat-icon>shopping_cart</mat-icon>
+              </button>
+
+              <app-tier-badge [tier]="authService.account()!.tier" />
               <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="User menu">
                 <mat-icon>account_circle</mat-icon>
               </button>
               <mat-menu #userMenu="matMenu">
                 <div class="user-info" mat-menu-item disabled>
                   <mat-icon>email</mat-icon>
-                  <span>{{ account.email }}</span>
+                  <span>{{ authService.account()!.email }}</span>
                 </div>
                 <mat-divider></mat-divider>
                 <button mat-menu-item (click)="authService.logout()">
@@ -101,6 +115,16 @@ import { map, shareReplay } from 'rxjs';
             <router-outlet />
           </main>
         </mat-sidenav-content>
+
+        <!-- Cart Sidebar (right side) -->
+        <mat-sidenav
+          #cartSidenav
+          mode="over"
+          position="end"
+          class="cart-sidenav"
+        >
+          <app-cart-sidebar />
+        </mat-sidenav>
       </mat-sidenav-container>
     } @else {
       <router-outlet />
@@ -180,10 +204,16 @@ import { map, shareReplay } from 'rxjs';
       opacity: 0.7;
       font-size: 13px;
     }
+
+    .cart-sidenav {
+      width: 380px;
+      max-width: 90vw;
+    }
   `],
 })
 export class AppComponent {
   authService = inject(AuthService);
+  cartService = inject(CartService);
   private breakpointObserver = inject(BreakpointObserver);
 
   private isSmall$ = this.breakpointObserver

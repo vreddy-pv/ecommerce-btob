@@ -1,4 +1,8 @@
 import { Routes } from '@angular/router';
+import { OrdersComponent } from './orders.component';
+import { OrderDetailComponent } from './order-detail.component';
 
-// Stub orders routes — populated by plan 02-03
-export const ordersRoutes: Routes = [];
+export const ordersRoutes: Routes = [
+  { path: '', component: OrdersComponent },
+  { path: ':id', component: OrderDetailComponent },
+];
