@@ -9,7 +9,8 @@ This roadmap builds a B2B auto parts e-commerce platform with Spring Boot micros
 - [ ] **Phase 1: Backend Foundation** - Spring Boot microservices with domain entities, repositories, and REST controllers
 - [ ] **Phase 2: Angular Frontend** - B2B dashboard with catalog browsing and order management
 - [ ] **Phase 3: MCP Server Integration** - AI agent tools for chatbot functionality
-- [ ] **Phase 4: Chatbot UI & Agent Loop** - Chat interface wired to LLM for intent routing
+- [x] **Phase 4: Chatbot UI & Agent Loop** - Chat interface wired to LLM for intent routing
+- [ ] **Phase 5: Inventory Management** - Proper inventory with reservations, cancellation, low-stock alerts, and restock
 
 ## Phase Details
 
@@ -71,17 +72,35 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 04-01: Angular chat component
-- [ ] 04-02: LLM integration and intent routing
+- [x] 04-01: Angular chat component
+- [x] 04-02: LLM integration and intent routing
+
+### Phase 5: Inventory Management
+**Goal**: Add proper inventory management with soft reservations, cancellation/restock, low-stock alerting, and admin restock workflow
+**Depends on**: Phase 1, Phase 3
+**Requirements**: [INV-01, INV-02, INV-03, INV-04, INV-05]
+**Success Criteria** (what must be TRUE):
+  1. Placing an order reserves inventory (soft reservation, not hard decrement)
+  2. Shipment commits reservation (decrements actual stock)
+  3. Cancellation releases reserved inventory (restores available stock)
+  4. Low-stock products are queryable via API and visible on dashboard
+  5. Admin can adjust inventory with delta-based endpoint (auth-protected)
+  6. Concurrency conflicts handled via optimistic locking + retry
+**Context**: 05-CONTEXT.md (6 locked decisions)
+**Plans**: TBD
+
+Plans:
+- TBD after planning phase
 
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Backend Foundation | 4/4 | Complete | 2026-06-21 |
 | 2. Angular Frontend | 3/3 | Complete | 2026-06-21 |
 | 3. MCP Server Integration | 2/2 | Complete | 2026-06-21 |
-| 4. Chatbot UI & Agent Loop | 0/2 | Not started | - |
+| 4. Chatbot UI & Agent Loop | 2/2 | Complete | 2026-06-22 |
+| 5. Inventory Management | 0/0 | Planning | - |
