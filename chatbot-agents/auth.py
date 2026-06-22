@@ -7,7 +7,7 @@ import base64
 import hmac
 import hashlib
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Dict
 from fastapi import HTTPException, Header
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
@@ -52,8 +52,8 @@ def decode_jwt(token: str) -> Optional[Dict]:
 
         # Check expiration
         if "exp" in payload:
-            exp = datetime.fromtimestamp(payload["exp"])
-            if datetime.utcnow() > exp:
+            exp = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+            if datetime.now(timezone.utc) > exp:
                 return None
 
         return payload

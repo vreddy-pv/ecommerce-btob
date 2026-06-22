@@ -1,14 +1,12 @@
 """
 MCP Client Manager - Connects to Java MCP servers and exposes tools to LangGraph agents.
-Uses native MCP library for SSE connections.
+Uses MultiServerMCPClient from langchain-mcp-adapters.
 """
 import asyncio
 from typing import Dict, List, Any
 from contextlib import AsyncExitStack
 
-from mcp import ClientSession
-from mcp.client.sse import sse_client
-from langchain_mcp_adapters.tools import load_mcp_tools
+from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_core.tools import Tool
 
 from dotenv import load_dotenv
@@ -19,45 +17,8 @@ class McpClientManager:
     """Manages connections to multiple MCP servers and provides tools to agents."""
 
     def __init__(self):
-        self.sessions: Dict[str, ClientSession] = {}
+        self.client: MultiServerMCPClient | None = None
         self.tools: Dict[str, List[Tool]] = {}
-        self.exit_stack = AsyncExitStack()
-
-    async def connect_to_server(self, server_name: str, sse_url: str):
-        """
-        Connect to an MCP server via SSE.
-
-        Args:
-            server_name: Name identifier for this server
-            sse_url: SSE endpoint URL (e.g., http://localhost:8083/sse)
-        """
-        try:
-            # Connect to SSE endpoint
-            sse_transport = await self.exit_stack.enter_async_context(
-                sse_client(url=sse_url)
-            )
-
-            # Create MCP session
-            session = await self.exit_stack.enter_async_context(
-                ClientSession(*sse_transport)
-            )
-
-            # Initialize the session
-            await session.initialize()
-
-            self.sessions[server_name] = session
-
-            # Load tools from this server
-            tools = await load_mcp_tools(session)
-            self.tools[server_name] = tools
-
-            print(f"Connected to MCP server: {server_name} at {sse_url}")
-            print(f"  Tools available: {[t.name for t in tools]}")
-
-        except Exception as e:
-            print(f"Failed to connect to {server_name} at {sse_url}: {e}")
-            import traceback
-            traceback.print_exc()
 
     async def connect_to_servers(self, server_configs: Dict[str, Dict]):
         """
@@ -66,8 +27,47 @@ class McpClientManager:
         Args:
             server_configs: Dict of server_name -> config with 'url' key
         """
-        for server_name, config in server_configs.items():
-            await self.connect_to_server(server_name, config["url"])
+        try:
+            # Build server config for MultiServerMCPClient
+            servers = {}
+            for server_name, config in server_configs.items():
+                servers[server_name] = {
+                    "url": config["url"],
+                    "transport": "sse",
+                }
+
+            self.client = MultiServerMCPClient(servers)
+
+            # Get all tools from all servers
+            all_tools = await self.client.get_tools()
+
+            # Group tools by server name using tool name prefix
+            for tool in all_tools:
+                # Tools from langchain-mcp-adapters are prefixed with server_name
+                for server_name in server_configs.keys():
+                    prefix = f"{server_name}__"
+                    if hasattr(tool, 'name') and tool.name.startswith(prefix):
+                        clean_name = tool.name[len(prefix):]
+                        if server_name not in self.tools:
+                            self.tools[server_name] = []
+                        self.tools[server_name].append(tool)
+                    elif not any(t.name.startswith(s + "__") for s in server_configs.keys() for t in [tool]):
+                        # No prefix means it came from the first server or single server
+                        pass
+
+            # If no prefixed tools found, assign all tools to all servers
+            if not self.tools:
+                for server_name in server_configs.keys():
+                    self.tools[server_name] = list(all_tools)
+
+            for server_name, tools in self.tools.items():
+                print(f"Connected to MCP server: {server_name}")
+                print(f"  Tools available: {[t.name for t in tools]}")
+
+        except Exception as e:
+            print(f"Failed to connect to MCP servers: {e}")
+            import traceback
+            traceback.print_exc()
 
     def get_tools_for_server(self, server_name: str) -> List[Tool]:
         """Get tools from a specific MCP server."""
@@ -82,7 +82,7 @@ class McpClientManager:
 
     async def close(self):
         """Close all MCP connections."""
-        await self.exit_stack.aclose()
+        pass
 
 
 # Global instance

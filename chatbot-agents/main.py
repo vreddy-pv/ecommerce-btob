@@ -125,7 +125,7 @@ async def health_check():
             "catalog": catalog_agent is not None,
             "supervisor": supervisor_graph is not None
         },
-        "mcp_servers": list(mcp_manager.sessions.keys())
+        "mcp_servers": list(mcp_manager.tools.keys())
     }
 
 
