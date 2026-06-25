@@ -45,7 +45,7 @@ spring:
             - StripPrefix=0
 
         - id: chatbot-agents
-          uri: http://host.docker.internal:8090
+          uri: http://chatbot-agents:8090
           predicates:
             - Path=/api/chat/**
           filters:

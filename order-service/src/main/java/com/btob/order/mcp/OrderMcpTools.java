@@ -66,9 +66,9 @@ public class OrderMcpTools {
      * @param status Optional status filter (PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED)
      * @return List of orders with ID, status, total amount, and item count
      */
-    @Tool(description = "List recent orders for an account. Returns order IDs, statuses, and totals. Use this when the user provides a partial order ID or wants to see their orders.")
+    @Tool(description = "List recent orders for the current user's account. Pass the accountId from the conversation context. Returns order IDs, statuses, totals, item counts, and dates. Use this FIRST when the user asks about 'my orders', 'show orders', or gives a partial order ID.")
     public List<Map<String, Object>> list_orders(
-            @ToolParam(description = "The account ID to list orders for (UUID format)") String accountId,
+            @ToolParam(description = "The account ID from the conversation context (UUID format)") String accountId,
             @ToolParam(description = "Optional status filter: PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED", required = false) String status) {
 
         log.info("MCP Tool called: list_orders(accountId={}, status={})", accountId, status);
