@@ -26,6 +26,8 @@ public class ProductDto {
     private String description;
     private BigDecimal basePrice;
     private Integer inventoryLevel;
+    private Integer reservedInventory;
+    private Integer reorderPoint;
     private UUID categoryId;
     private String categoryName;
     private Boolean isActive;
