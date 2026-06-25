@@ -22,11 +22,11 @@ spring:
         inventoryUpdated-out-0:
           destination: catalog-events
           content-type: application/json
-        orderCreated-in-0:
+        orderCreatedConsumer-in-0:
           destination: order-events
           group: catalog-service
           content-type: application/json
-        orderCancelled-in-0:
+        orderCancelledConsumer-in-0:
           destination: order-cancelled-events
           group: catalog-service
           content-type: application/json
