@@ -44,6 +44,18 @@ public class Product {
     @Builder.Default
     private Integer inventoryLevel = 0;
 
+    @Column(name = "reserved_inventory")
+    @Builder.Default
+    private Integer reservedInventory = 0;
+
+    @Column(name = "reorder_point")
+    @Builder.Default
+    private Integer reorderPoint = 10;
+
+    @Version
+    @Column(name = "version")
+    private Long version;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -59,4 +71,12 @@ public class Product {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    /**
+     * Calculate available inventory (not reserved).
+     * @return inventoryLevel - reservedInventory
+     */
+    public int getAvailableInventory() {
+        return (inventoryLevel != null ? inventoryLevel : 0) - (reservedInventory != null ? reservedInventory : 0);
+    }
 }
