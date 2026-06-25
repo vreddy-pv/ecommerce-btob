@@ -78,7 +78,7 @@ public class OrderMcpTools {
             Page<OrderResponse> orders;
 
             if (status != null && !status.isBlank()) {
-                var orderStatus = com.btob.order.model.OrderStatus.valueOf(status.toUpperCase());
+                var orderStatus = com.btob.order.entity.OrderStatus.valueOf(status.toUpperCase());
                 orders = orderService.getOrdersByAccountAndStatus(accountUuid, orderStatus, 0, 50);
             } else {
                 orders = orderService.getOrdersByAccount(accountUuid, 0, 50);
