@@ -2,7 +2,7 @@
 // Source: backend DTOs verified via codebase
 
 export type AccountTier = 'STANDARD' | 'SILVER' | 'GOLD' | 'PLATINUM';
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED';
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
 
 // AuthResponse from POST /api/auth/login
 export interface AuthResponse {
@@ -27,6 +27,8 @@ export interface ProductDto {
   description: string;
   basePrice: number;
   inventoryLevel: number;
+  reservedInventory: number;
+  reorderPoint: number;
   categoryId: string;
   categoryName: string;
   isActive: boolean;

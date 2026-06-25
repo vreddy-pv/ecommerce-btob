@@ -34,4 +34,16 @@ export class CatalogService {
   getCategories(): Observable<CategoryDto[]> {
     return this.http.get<CategoryDto[]>(`${this.apiUrl}/categories`);
   }
+
+  getLowStockProducts(): Observable<ProductDto[]> {
+    return this.http.get<ProductDto[]>(`${this.apiUrl}/products/low-stock`);
+  }
+
+  adjustInventory(sku: string, delta: number): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/products/${sku}/inventory`, { delta });
+  }
+
+  getProductStock(sku: string): Observable<{ available: number }> {
+    return this.http.get<{ available: number }>(`${this.apiUrl}/products/${sku}/stock`);
+  }
 }
