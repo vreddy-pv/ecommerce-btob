@@ -7,11 +7,13 @@ import com.btob.catalog.entity.AccountTier;
 import com.btob.catalog.entity.Category;
 import com.btob.catalog.entity.Product;
 import com.btob.catalog.entity.TierPricing;
+import com.btob.catalog.event.InventoryAdjustmentEvent;
 import com.btob.catalog.exception.ResourceNotFoundException;
 import com.btob.catalog.repository.CategoryRepository;
 import com.btob.catalog.repository.ProductRepository;
 import com.btob.catalog.repository.TierPricingRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,6 +41,7 @@ public class CatalogService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final TierPricingRepository tierPricingRepository;
+    private final StreamBridge streamBridge;
 
     /**
      * Get paginated product list with optional search/filter.
@@ -264,14 +268,26 @@ public class CatalogService {
         Product product = productRepository.findBySku(sku)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found with SKU: " + sku));
 
-        int newLevel = product.getInventoryLevel() + delta;
+        int previousLevel = product.getInventoryLevel();
+        int newLevel = previousLevel + delta;
         if (newLevel < 0) {
             throw new RuntimeException("Insufficient inventory for SKU: " + sku +
-                    ". Current: " + product.getInventoryLevel() + ", delta: " + delta);
+                    ". Current: " + previousLevel + ", delta: " + delta);
         }
 
         product.setInventoryLevel(newLevel);
         Product savedProduct = productRepository.save(product);
+
+        // Publish inventory adjustment event for audit and tracking
+        InventoryAdjustmentEvent event = InventoryAdjustmentEvent.builder()
+                .sku(sku)
+                .previousLevel(previousLevel)
+                .newLevel(newLevel)
+                .delta(delta)
+                .timestamp(LocalDateTime.now())
+                .build();
+        streamBridge.send("inventoryUpdated-out-0", event);
+
         return convertToDto(savedProduct);
     }
 
