@@ -7,9 +7,11 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { CurrencyPipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { CartService } from '../../core/services/cart.service';
 import { OrderService } from '../../core/services/order.service';
 import { AuthService } from '../../core/services/auth.service';
+import { CatalogService } from '../../core/services/catalog.service';
 import { CartItem } from '../../core/services/cart.service';
 
 @Component({
@@ -216,11 +218,40 @@ export class CartSidebarComponent {
   cartService = inject(CartService);
   private orderService = inject(OrderService);
   private authService = inject(AuthService);
+  private catalogService = inject(CatalogService);
   private router = inject(Router);
   private dialog = inject(MatDialog);
   private snackBar = inject(MatSnackBar);
 
   openConfirmationDialog(): void {
+    const items = this.cartService.items();
+    const stockChecks = items.map(item =>
+      this.catalogService.getProductStock(item.product.sku)
+    );
+
+    forkJoin(stockChecks).subscribe({
+      next: (stockResults) => {
+        let hasError = false;
+        for (let i = 0; i < items.length; i++) {
+          const available = stockResults[i].available;
+          if (available < items[i].quantity) {
+            this.snackBar.open(
+              `Insufficient stock for ${items[i].product.sku}: ${available} available, ${items[i].quantity} requested`,
+              'OK', { duration: 5000 }
+            );
+            hasError = true;
+          }
+        }
+        if (hasError) return;
+        this.openConfirmDialog();
+      },
+      error: () => {
+        this.openConfirmDialog();
+      },
+    });
+  }
+
+  private openConfirmDialog(): void {
     const dialogRef = this.dialog.open(CartConfirmationDialogComponent, {
       width: '480px',
       data: {
