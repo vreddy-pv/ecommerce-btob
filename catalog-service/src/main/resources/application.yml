@@ -26,6 +26,10 @@ spring:
           destination: order-events
           group: catalog-service
           content-type: application/json
+        orderCancelled-in-0:
+          destination: order-cancelled-events
+          group: catalog-service
+          content-type: application/json
       rabbit:
         binder:
           addresses: ${RABBITMQ_HOST:localhost}:${RABBITMQ_PORT:5672}
