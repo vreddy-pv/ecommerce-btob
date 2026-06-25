@@ -10,6 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+import { RouterLink } from '@angular/router';
 import { ProductDto, CategoryDto, AccountTier, Page } from '../../core/models/api.models';
 import { CatalogService } from '../../core/services/catalog.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -20,6 +21,7 @@ import { ProductCardComponent } from './product-card.component';
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     MatFormFieldModule,
     MatInputModule,
     MatChipsModule,
@@ -33,6 +35,27 @@ import { ProductCardComponent } from './product-card.component';
   ],
   template: `
     <div class="catalog-container">
+      @if (lowStockProducts().length > 0) {
+        <mat-card class="low-stock-widget">
+          <mat-card-content>
+            <div class="low-stock-header">
+              <mat-icon color="warn">warning</mat-icon>
+              <h3>Low Stock Alert</h3>
+              <a mat-button routerLink="/inventory" class="view-all-link">View All</a>
+            </div>
+            <div class="low-stock-items">
+              @for (p of lowStockProducts(); track p.sku) {
+                <div class="low-stock-item">
+                  <span class="item-sku">{{ p.sku }}</span>
+                  <span class="item-name">{{ p.name }}</span>
+                  <span class="item-stock">{{ p.inventoryLevel - p.reservedInventory }} available</span>
+                </div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
       <!-- Toolbar: Search + Filters + Sort -->
       <div class="catalog-toolbar">
         <mat-form-field appearance="outline" class="search-field">
@@ -111,6 +134,51 @@ import { ProductCardComponent } from './product-card.component';
   styles: [`
     .catalog-container {
       padding: 24px;
+    }
+    .low-stock-widget {
+      margin-bottom: 24px;
+      background-color: #FFF3E0;
+    }
+    .low-stock-widget mat-card-content {
+      padding: 16px;
+    }
+    .low-stock-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .low-stock-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      flex: 1;
+    }
+    .low-stock-header .view-all-link {
+      font-size: 13px;
+    }
+    .low-stock-items {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .low-stock-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+    }
+    .low-stock-item .item-sku {
+      font-weight: 500;
+      min-width: 80px;
+    }
+    .low-stock-item .item-name {
+      flex: 1;
+      color: rgba(0,0,0,0.7);
+    }
+    .low-stock-item .item-stock {
+      color: #D32F2F;
+      font-weight: 500;
     }
     .catalog-toolbar {
       display: flex;
@@ -204,6 +272,7 @@ export class CatalogComponent implements OnInit {
   totalElements = signal(0);
   loading = signal(true);
   error = signal<string | null>(null);
+  lowStockProducts = signal<ProductDto[]>([]);
 
   // Derived
   currentTier = computed<AccountTier>(() => this.authService.account()?.tier ?? 'STANDARD');
@@ -234,6 +303,12 @@ export class CatalogComponent implements OnInit {
     this.catalogService.getCategories().subscribe({
       next: (cats) => this.categories.set(cats),
       error: () => {}, // silently fail - categories are optional
+    });
+
+    // Load low stock products
+    this.catalogService.getLowStockProducts().subscribe({
+      next: (items) => this.lowStockProducts.set(items),
+      error: () => {},
     });
 
     // Load products
