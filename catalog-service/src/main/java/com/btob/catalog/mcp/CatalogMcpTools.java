@@ -74,6 +74,54 @@ public class CatalogMcpTools {
     }
 
     /**
+     * Get list of products that are low on stock.
+     * Available inventory at or below the reorder point.
+     *
+     * @return List of low-stock products with SKU, name, available, and reorder point
+     */
+    @Tool(description = "Get list of products that are low on stock (available inventory at or below reorder point).")
+    public List<Map<String, Object>> get_low_stock_items() {
+        log.info("MCP Tool called: get_low_stock_items");
+
+        try {
+            List<ProductDto> lowStockProducts = catalogService.getLowStockProducts();
+
+            return lowStockProducts.stream()
+                    .map(p -> Map.<String, Object>of(
+                            "sku", p.getSku(),
+                            "name", p.getName(),
+                            "available", p.getInventoryLevel() - (p.getReservedInventory() != null ? p.getReservedInventory() : 0),
+                            "reorderPoint", p.getReorderPoint() != null ? p.getReorderPoint() : 0
+                    ))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Error getting low stock items", e);
+            return List.of(Map.of("error", "Failed to get low stock items: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Check available stock for a product SKU.
+     *
+     * @param sku Product SKU
+     * @return Map with SKU and available quantity
+     */
+    @Tool(description = "Check available stock for a product SKU. Returns current available quantity.")
+    public Map<String, Object> check_stock(
+            @ToolParam(description = "Product SKU (e.g., BRK-001, ELC-002)") String sku) {
+
+        log.info("MCP Tool called: check_stock(sku={})", sku);
+
+        try {
+            int available = catalogService.getAvailableStock(sku);
+            return Map.of("sku", sku, "available", available);
+        } catch (Exception e) {
+            log.error("Error checking stock for SKU: {}", sku, e);
+            return Map.of("error", "Failed to check stock: " + e.getMessage());
+        }
+    }
+
+    /**
      * Convert ProductDto to Map for MCP response.
      */
     private Map<String, Object> productToMap(ProductDto product) {
