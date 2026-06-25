@@ -4,9 +4,11 @@ import com.btob.catalog.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import jakarta.persistence.LockModeType;
 
 import java.util.List;
 import java.util.Optional;
@@ -78,4 +80,26 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             @Param("search") String search,
             @Param("categoryId") UUID categoryId,
             Pageable pageable);
+
+    /**
+     * Find product by SKU with pessimistic write lock.
+     * Used for high-contention inventory reservation paths.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Product p WHERE p.sku = :sku")
+    Optional<Product> findBySkuForUpdate(@Param("sku") String sku);
+
+    /**
+     * Find products where available stock (inventoryLevel - reservedInventory)
+     * is at or below the reorder point.
+     * Used for low-stock alerting per INV-05.
+     */
+    @Query("SELECT p FROM Product p WHERE (p.inventoryLevel - p.reservedInventory) <= p.reorderPoint")
+    List<Product> findLowStockProducts();
+
+    /**
+     * Find products with reorder point at or above the given threshold.
+     * Used for filtering products that need attention.
+     */
+    List<Product> findByReorderPointGreaterThanEqual(Integer reorderPoint);
 }
