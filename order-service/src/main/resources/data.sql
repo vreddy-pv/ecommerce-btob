@@ -3,7 +3,7 @@
 
 -- Order 1: admin@acme.com - 3 items, PENDING status
 INSERT INTO orders (id, account_id, status, total_amount, credit_used, created_at, updated_at)
-VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', '11111111-1111-1111-1111-111111111111', 'PENDING', 129.97, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'PENDING', 129.97, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO order_items (id, order_id, product_sku, product_name, quantity, unit_price, total_price)
@@ -15,7 +15,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Order 2: buyer@globex.com - 2 items, SHIPPED status
 INSERT INTO orders (id, account_id, status, total_amount, credit_used, created_at, updated_at)
-VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567891', '22222222-2222-2222-2222-222222222222', 'SHIPPED', 209.98, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567891', 'b2c3d4e5-f6a7-8901-bcde-f12345678901', 'SHIPPED', 209.98, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO order_items (id, order_id, product_sku, product_name, quantity, unit_price, total_price)
@@ -26,7 +26,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Order 3: manager@initech.com - 5 items, DELIVERED status
 INSERT INTO orders (id, account_id, status, total_amount, credit_used, created_at, updated_at)
-VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567892', '33333333-3333-3333-3333-333333333333', 'DELIVERED', 459.95, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567892', 'c3d4e5f6-a7b8-9012-cdef-123456789012', 'DELIVERED', 459.95, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO order_items (id, order_id, product_sku, product_name, quantity, unit_price, total_price)
@@ -40,7 +40,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Order 4: admin@acme.com - 1 item, CONFIRMED status
 INSERT INTO orders (id, account_id, status, total_amount, credit_used, created_at, updated_at)
-VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567893', '11111111-1111-1111-1111-111111111111', 'CONFIRMED', 199.99, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567893', 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', 'CONFIRMED', 199.99, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO order_items (id, order_id, product_sku, product_name, quantity, unit_price, total_price)
@@ -50,7 +50,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Order 5: buyer@globex.com - 4 items, PENDING status
 INSERT INTO orders (id, account_id, status, total_amount, credit_used, created_at, updated_at)
-VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567894', '22222222-2222-2222-2222-222222222222', 'PENDING', 319.96, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+VALUES ('a1b2c3d4-e5f6-7890-abcd-ef1234567894', 'b2c3d4e5-f6a7-8901-bcde-f12345678901', 'PENDING', 319.96, 0.00, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO order_items (id, order_id, product_sku, product_name, quantity, unit_price, total_price)
