@@ -159,10 +159,19 @@ async def chat(
     if session_id not in sessions:
         sessions[session_id] = []
 
-    # Add user message to session
+    # Add user message to session with account context
     user_message = request.messages[-1] if request.messages else None
     if user_message:
         sessions[session_id].append({"role": "user", "content": user_message.content})
+
+    # Inject account context as a system message if not already present
+    context_msg = {"role": "system", "content": f"The current user's accountId is: {account_id}"}
+    has_context = any(
+        m.get("role") == "system" and "accountId" in m.get("content", "")
+        for m in sessions[session_id]
+    )
+    if not has_context:
+        sessions[session_id].insert(0, context_msg)
 
     try:
         # Run supervisor graph

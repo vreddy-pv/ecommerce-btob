@@ -7,12 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * MCP Tools for order management.
@@ -54,6 +56,49 @@ public class OrderMcpTools {
                     "status", "ERROR",
                     "message", "Failed to check order status: " + e.getMessage()
             );
+        }
+    }
+
+    /**
+     * List orders for an account.
+     *
+     * @param accountId The account ID to list orders for
+     * @param status Optional status filter (PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED)
+     * @return List of orders with ID, status, total amount, and item count
+     */
+    @Tool(description = "List recent orders for an account. Returns order IDs, statuses, and totals. Use this when the user provides a partial order ID or wants to see their orders.")
+    public List<Map<String, Object>> list_orders(
+            @ToolParam(description = "The account ID to list orders for (UUID format)") String accountId,
+            @ToolParam(description = "Optional status filter: PENDING, CONFIRMED, SHIPPED, DELIVERED, CANCELLED", required = false) String status) {
+
+        log.info("MCP Tool called: list_orders(accountId={}, status={})", accountId, status);
+
+        try {
+            UUID accountUuid = UUID.fromString(accountId);
+            Page<OrderResponse> orders;
+
+            if (status != null && !status.isBlank()) {
+                var orderStatus = com.btob.order.model.OrderStatus.valueOf(status.toUpperCase());
+                orders = orderService.getOrdersByAccountAndStatus(accountUuid, orderStatus, 0, 50);
+            } else {
+                orders = orderService.getOrdersByAccount(accountUuid, 0, 50);
+            }
+
+            return orders.getContent().stream()
+                    .map(order -> Map.<String, Object>of(
+                            "orderId", order.getId().toString(),
+                            "status", order.getStatus().name(),
+                            "totalAmount", order.getTotalAmount(),
+                            "itemCount", order.getItems().size(),
+                            "createdAt", order.getCreatedAt().toString()
+                    ))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error("Error listing orders", e);
+            return List.of(Map.of(
+                    "status", "ERROR",
+                    "message", "Failed to list orders: " + e.getMessage()
+            ));
         }
     }
 

@@ -113,6 +113,13 @@ public class OrderService {
                 .map(this::mapToResponse);
     }
 
+    @Transactional(readOnly = true)
+    public Page<OrderResponse> getOrdersByAccountAndStatus(UUID accountId, OrderStatus status, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        return orderRepository.findByAccountIdAndStatusOrderByCreatedAtDesc(accountId, status, pageRequest)
+                .map(this::mapToResponse);
+    }
+
     @Transactional
     public OrderResponse updateOrderStatus(UUID id, OrderStatus newStatus) {
         log.info("Updating order {} status to {}", id, newStatus);

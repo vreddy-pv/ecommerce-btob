@@ -36,4 +36,9 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
      * Find orders for an account filtered by status.
      */
     List<Order> findByAccountIdAndStatus(UUID accountId, OrderStatus status);
+
+    /**
+     * Find orders for an account filtered by status, paginated.
+     */
+    Page<Order> findByAccountIdAndStatusOrderByCreatedAtDesc(UUID accountId, OrderStatus status, Pageable pageable);
 }
