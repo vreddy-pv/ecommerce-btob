@@ -7,7 +7,8 @@ INSERT INTO categories (id, name, parent_id, sort_order) VALUES
 ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'Engine', NULL, 2),
 ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'Electrical', NULL, 3),
 ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'Suspension', NULL, 4),
-('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'Filters', NULL, 5);
+('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'Filters', NULL, 5)
+ON CONFLICT (id) DO NOTHING;
 
 -- Products (20 auto parts)
 INSERT INTO products (id, sku, name, description, base_price, inventory_level, category_id, is_active, created_at, updated_at) VALUES
@@ -39,7 +40,8 @@ INSERT INTO products (id, sku, name, description, base_price, inventory_level, c
 
 -- Filters (2 products)
 ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b19', 'FLT-001', 'Cabin Air Filter', 'Cabin air filter with activated carbon', 19.99, 350, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', true, NOW(), NOW()),
-('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b20', 'FLT-002', 'Fuel Filter', 'Inline fuel filter', 14.99, 280, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', true, NOW(), NOW());
+('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b20', 'FLT-002', 'Fuel Filter', 'Inline fuel filter', 14.99, 280, 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', true, NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;
 
 -- Tier Pricing (SILVER 10%, GOLD 15%, PLATINUM 20% discount)
 INSERT INTO tier_pricing (id, product_id, tier, price) VALUES
@@ -86,4 +88,5 @@ INSERT INTO tier_pricing (id, product_id, tier, price) VALUES
 -- FLT-001 Cabin Air Filter
 ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c25', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b19', 'SILVER', 17.99),
 ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c26', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b19', 'GOLD', 16.99),
-('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c27', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b19', 'PLATINUM', 15.99);
+('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c27', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b19', 'PLATINUM', 15.99)
+ON CONFLICT (id) DO NOTHING;
