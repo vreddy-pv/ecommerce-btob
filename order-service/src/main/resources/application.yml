@@ -23,6 +23,9 @@ spring:
         orderStatusChanged-out-0:
           destination: order-events
           content-type: application/json
+        orderCancelled-out-0:
+          destination: order-events
+          content-type: application/json
       rabbit:
         binder:
           addresses: ${RABBITMQ_HOST:localhost}:${RABBITMQ_PORT:5672}
