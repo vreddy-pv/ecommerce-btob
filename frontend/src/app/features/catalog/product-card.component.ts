@@ -25,14 +25,22 @@ import { CartService } from '../../core/services/cart.service';
           <span class="price">{{ tierPrice() | number:'1.2-2' }}</span>
           <span class="tier-label">{{ tier() }} price</span>
         </div>
-        <div class="product-inventory" [class.low-stock]="isLowStock()">
-          <span
-            [matBadge]="isLowStock() ? 'Low stock' : null"
-            matBadgeSize="small"
-            matBadgeColor="warn"
-          >
-            {{ product().inventoryLevel }} in stock
-          </span>
+        <div class="product-inventory"
+             [class.low-stock]="isLowStock()"
+             [class.out-of-stock]="isOutOfStock()">
+          @if (isOutOfStock()) {
+            <span>Out of stock</span>
+          } @else if (isLowStock()) {
+            <span
+              [matBadge]="'Low stock'"
+              matBadgeSize="small"
+              matBadgeColor="warn"
+            >
+              {{ availableStock() }} available
+            </span>
+          } @else {
+            <span>{{ availableStock() }} in stock</span>
+          }
         </div>
       </mat-card-content>
       <mat-card-actions>
@@ -109,6 +117,10 @@ import { CartService } from '../../core/services/cart.service';
     .product-inventory.low-stock {
       color: #D32F2F;
     }
+    .product-inventory.out-of-stock {
+      color: #D32F2F;
+      font-weight: 500;
+    }
     mat-card-actions {
       padding: 8px 16px 16px;
     }
@@ -131,7 +143,14 @@ export class ProductCardComponent {
     return tierEntry?.price ?? p.basePrice;
   });
 
-  isLowStock = computed(() => this.product().inventoryLevel < 10);
+  availableStock = computed(() => this.product().inventoryLevel - (this.product().reservedInventory ?? 0));
+
+  isLowStock = computed(() => {
+    const p = this.product();
+    return this.availableStock() <= (p.reorderPoint ?? 10) && this.availableStock() > 0;
+  });
+
+  isOutOfStock = computed(() => this.availableStock() <= 0);
 
   addToOrder(): void {
     const product = this.product();
