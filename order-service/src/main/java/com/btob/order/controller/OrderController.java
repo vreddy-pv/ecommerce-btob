@@ -92,6 +92,21 @@ public class OrderController {
     }
 
     /**
+     * Cancel an order (PENDING or CONFIRMED only).
+     * POST /api/orders/{id}/cancel
+     */
+    @PostMapping("/{id}/cancel")
+    @Operation(summary = "Cancel order", description = "Cancel an order in PENDING or CONFIRMED status")
+    @ApiResponse(responseCode = "200", description = "Order cancelled")
+    @ApiResponse(responseCode = "400", description = "Cannot cancel in current status")
+    @ApiResponse(responseCode = "404", description = "Order not found")
+    public ResponseEntity<OrderResponse> cancelOrder(
+            @Parameter(description = "Order ID") @PathVariable UUID id) {
+        OrderResponse response = orderService.cancelOrder(id);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Get order status only (for chatbot queries per CHAT-01).
      * GET /api/orders/{id}/status
      */
