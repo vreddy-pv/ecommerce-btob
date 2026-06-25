@@ -4,6 +4,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DatePipe, CurrencyPipe } from '@angular/common';
 import { StatusChipComponent } from '../../shared/components/status-chip.component';
 import { OrderService } from '../../core/services/order.service';
@@ -17,6 +19,8 @@ import { OrderResponse } from '../../core/models/api.models';
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatDialogModule,
     RouterLink,
     DatePipe,
     CurrencyPipe,
@@ -62,6 +66,14 @@ import { OrderResponse } from '../../core/models/api.models';
                 <span class="label">Status</span>
                 <app-status-chip [status]="o.status" />
               </div>
+              @if (o.status === 'PENDING' || o.status === 'CONFIRMED') {
+                <div class="info-row">
+                  <span class="label"></span>
+                  <button mat-raised-button color="warn" (click)="cancelOrder()" [disabled]="cancelling()">
+                    {{ cancelling() ? 'Cancelling...' : 'Cancel Order' }}
+                  </button>
+                </div>
+              }
               <div class="info-row">
                 <span class="label">Total Amount</span>
                 <span class="value total">{{ o.totalAmount | currency }}</span>
@@ -199,10 +211,12 @@ export class OrderDetailComponent implements OnInit {
   private orderService = inject(OrderService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
 
   order = signal<OrderResponse | null>(null);
   loading = signal(false);
   error = signal<string | null>(null);
+  cancelling = signal(false);
 
   itemColumns = ['sku', 'name', 'quantity', 'unitPrice', 'lineTotal'];
 
@@ -213,6 +227,26 @@ export class OrderDetailComponent implements OnInit {
       return;
     }
     this.loadOrder(id);
+  }
+
+  cancelOrder(): void {
+    const o = this.order();
+    if (!o) return;
+
+    if (!confirm('Are you sure you want to cancel this order?')) return;
+
+    this.cancelling.set(true);
+    this.orderService.cancelOrder(o.id).subscribe({
+      next: (updated) => {
+        this.order.set(updated);
+        this.cancelling.set(false);
+        this.snackBar.open('Order cancelled successfully', 'OK', { duration: 3000 });
+      },
+      error: () => {
+        this.cancelling.set(false);
+        this.snackBar.open('Failed to cancel order. Please try again.', 'OK', { duration: 3000 });
+      },
+    });
   }
 
   private loadOrder(id: string): void {
