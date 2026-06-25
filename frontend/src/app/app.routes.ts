@@ -26,5 +26,10 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/chat/chat.component').then(m => m.ChatComponent),
   },
+  {
+    path: 'inventory',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/inventory/inventory-list.component').then(m => m.InventoryListComponent),
+  },
   { path: '**', redirectTo: '/catalog' },
 ];

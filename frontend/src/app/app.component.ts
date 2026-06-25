@@ -70,6 +70,12 @@ import { map, shareReplay } from 'rxjs';
                 <span matListItemTitle>AI Assistant</span>
               }
             </a>
+            <a mat-list-item routerLink="/inventory" routerLinkActive="active-link">
+              <mat-icon matListItemIcon>inventory</mat-icon>
+              @if (!isSmall()) {
+                <span matListItemTitle>Inventory</span>
+              }
+            </a>
           </mat-nav-list>
         </mat-sidenav>
 
