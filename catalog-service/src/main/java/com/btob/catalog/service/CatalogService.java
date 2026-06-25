@@ -16,6 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -158,6 +161,147 @@ public class CatalogService {
     }
 
     /**
+     * Reserve inventory for an order line item.
+     * Increments reservedInventory. Throws if available stock is insufficient.
+     * Uses optimistic locking to handle concurrent reservations.
+     *
+     * @param sku      Product SKU
+     * @param quantity Quantity to reserve
+     * @throws RuntimeException if available stock < quantity
+     */
+    @Transactional
+    @Retryable(
+        retryFor = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 100)
+    )
+    public void reserveInventory(String sku, int quantity) {
+        Product product = productRepository.findBySku(sku)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with SKU: " + sku));
+
+        int available = product.getAvailableInventory();
+        if (available < quantity) {
+            throw new RuntimeException("Insufficient stock for SKU: " + sku +
+                    ". Available: " + available + ", requested: " + quantity);
+        }
+
+        product.setReservedInventory(product.getReservedInventory() + quantity);
+        productRepository.save(product);
+    }
+
+    /**
+     * Commit a reservation — decrement both inventoryLevel and reservedInventory.
+     * Called when an order moves from CONFIRMED to SHIPPED.
+     *
+     * @param sku      Product SKU
+     * @param quantity Quantity to commit
+     */
+    @Transactional
+    @Retryable(
+        retryFor = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 100)
+    )
+    public void commitReservation(String sku, int quantity) {
+        Product product = productRepository.findBySku(sku)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with SKU: " + sku));
+
+        product.setInventoryLevel(product.getInventoryLevel() - quantity);
+        product.setReservedInventory(product.getReservedInventory() - quantity);
+        productRepository.save(product);
+    }
+
+    /**
+     * Release a reservation — called when an order is cancelled.
+     * <p>
+     * If {@code wasConfirmed} is true (CONFIRMED → CANCELLED):
+     * restore inventoryLevel by adding quantity back, then decrement reservedInventory.
+     * If {@code wasConfirmed} is false (PENDING → CANCELLED):
+     * only decrement reservedInventory (inventoryLevel was never decremented).
+     *
+     * @param sku          Product SKU
+     * @param quantity     Quantity to release
+     * @param wasConfirmed Whether the order had been confirmed before cancellation
+     */
+    @Transactional
+    @Retryable(
+        retryFor = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 100)
+    )
+    public void releaseReservation(String sku, int quantity, boolean wasConfirmed) {
+        Product product = productRepository.findBySku(sku)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with SKU: " + sku));
+
+        if (wasConfirmed) {
+            // CONFIRMED → CANCELLED: restore inventory, remove reservation
+            product.setInventoryLevel(product.getInventoryLevel() + quantity);
+            product.setReservedInventory(product.getReservedInventory() - quantity);
+        } else {
+            // PENDING → CANCELLED: only remove reservation
+            product.setReservedInventory(product.getReservedInventory() - quantity);
+        }
+
+        productRepository.save(product);
+    }
+
+    /**
+     * Delta-based inventory adjustment (admin restock or write-off).
+     * Positive delta = restock (increase inventoryLevel).
+     * Negative delta = write-off (decrease inventoryLevel).
+     * Does NOT affect reservedInventory.
+     *
+     * @param sku   Product SKU
+     * @param delta Amount to adjust (positive = restock, negative = write-off)
+     */
+    @Transactional
+    @Retryable(
+        retryFor = ObjectOptimisticLockingFailureException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 100)
+    )
+    public ProductDto adjustInventory(String sku, int delta) {
+        Product product = productRepository.findBySku(sku)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with SKU: " + sku));
+
+        int newLevel = product.getInventoryLevel() + delta;
+        if (newLevel < 0) {
+            throw new RuntimeException("Insufficient inventory for SKU: " + sku +
+                    ". Current: " + product.getInventoryLevel() + ", delta: " + delta);
+        }
+
+        product.setInventoryLevel(newLevel);
+        Product savedProduct = productRepository.save(product);
+        return convertToDto(savedProduct);
+    }
+
+    /**
+     * Get products where available stock (inventoryLevel - reservedInventory)
+     * is at or below the reorder point.
+     *
+     * @return List of low-stock ProductDto
+     */
+    public List<ProductDto> getLowStockProducts() {
+        List<Product> lowStockProducts = productRepository.findLowStockProducts();
+        return lowStockProducts.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get available stock for a SKU.
+     * Available = inventoryLevel - reservedInventory.
+     *
+     * @param sku Product SKU
+     * @return Available stock quantity
+     */
+    public int getAvailableStock(String sku) {
+        Product product = productRepository.findBySku(sku)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with SKU: " + sku));
+        return product.getAvailableInventory();
+    }
+
+    /**
      * Convert Product entity to DTO.
      */
     private ProductDto convertToDto(Product product) {
@@ -168,6 +312,8 @@ public class CatalogService {
                 .description(product.getDescription())
                 .basePrice(product.getBasePrice())
                 .inventoryLevel(product.getInventoryLevel())
+                .reservedInventory(product.getReservedInventory())
+                .reorderPoint(product.getReorderPoint())
                 .categoryId(product.getCategory() != null ? product.getCategory().getId() : null)
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
                 .isActive(product.getIsActive())
