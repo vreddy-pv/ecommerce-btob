@@ -10,7 +10,7 @@ This roadmap builds a B2B auto parts e-commerce platform with Spring Boot micros
 - [ ] **Phase 2: Angular Frontend** - B2B dashboard with catalog browsing and order management
 - [ ] **Phase 3: MCP Server Integration** - AI agent tools for chatbot functionality
 - [x] **Phase 4: Chatbot UI & Agent Loop** - Chat interface wired to LLM for intent routing
-- [ ] **Phase 5: Inventory Management** - Proper inventory with reservations, cancellation, low-stock alerts, and restock
+- [x] **Phase 5: Inventory Management** - Proper inventory with reservations, cancellation, low-stock alerts, and restock
 
 ## Phase Details
 
@@ -87,10 +87,13 @@ Plans:
   5. Admin can adjust inventory with delta-based endpoint (auth-protected)
   6. Concurrency conflicts handled via optimistic locking + retry
 **Context**: 05-CONTEXT.md (6 locked decisions)
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- TBD after planning phase
+- [x] 05-01 — Catalog-service: entity, service, optimistic locking
+- [x] 05-02 — Catalog-service: events, controller, MCP tools
+- [x] 05-03 — Order-service: cancel flow, remove mock data
+- [x] 05-04 — Frontend: inventory page, low-stock widget, UI fixes
 
 ## Progress
 
@@ -103,4 +106,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | 2. Angular Frontend | 3/3 | Complete | 2026-06-21 |
 | 3. MCP Server Integration | 2/2 | Complete | 2026-06-21 |
 | 4. Chatbot UI & Agent Loop | 2/2 | Complete | 2026-06-22 |
-| 5. Inventory Management | 0/0 | Planning | - |
+| 5. Inventory Management | 4/4 | Complete | 2026-06-25 |

@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: unknown
-stopped_at: Phase 02 execution complete — all 3 plans done
-last_updated: "2026-06-21T14:23:53.871Z"
+status: active
+stopped_at: Phase 5 execution complete — all 4 plans done
+last_updated: "2026-06-25T13:05:00.000Z"
 progress:
-  total_phases: 4
-  completed_phases: 2
-  total_plans: 7
-  completed_plans: 7
-  percent: 50
+  total_phases: 5
+  completed_phases: 5
+  total_plans: 15
+  completed_plans: 15
+  percent: 100
 ---
 
 # State: B2B Auto Parts E-commerce Platform
@@ -20,57 +20,41 @@ progress:
 See: .planning/PROJECT.md (updated 2026-06-21)
 
 **Core value:** B2B customers can autonomously check order status and place new orders through an AI chatbot
-**Current focus:** Phase 02 — angular-frontend
+**Current focus:** Phase 5 — Inventory Management
 
 ## Session History
 
 | Date | Action | Phase | File |
 |------|--------|-------|------|
-| 2026-06-21 | Project initialized | - | .planning/PROJECT.md |
-| 2026-06-21 | Requirements defined | - | .planning/REQUIREMENTS.md |
-| 2026-06-21 | Roadmap created | - | .planning/ROADMAP.md |
-| 2026-06-21 | Phase 1 context gathered | 1 | .planning/phases/01-backend-foundation/01-CONTEXT.md |
-| 2026-06-21 | Phase 1 plans created | 1 | .planning/phases/01-backend-foundation/01-01-PLAN.md through 01-04-PLAN.md |
-| 2026-06-21 | Plan 01-01 completed | 1 | .planning/phases/01-backend-foundation/01-01-SUMMARY.md |
-| 2026-06-21 | Plan 01-02 completed | 1 | .planning/phases/01-backend-foundation/01-02-SUMMARY.md |
-| 2026-06-21 | Plan 01-03 completed | 1 | .planning/phases/01-backend-foundation/01-03-SUMMARY.md |
-| 2026-06-21 | Plan 01-04 completed | 1 | .planning/phases/01-backend-foundation/01-04-SUMMARY.md |
+| 2026-06-25 | Phase 5 planned | 5 | .planning/phases/05-inventory-management/05-PLAN.md |
+| 2026-06-25 | Plan 05-01 executed — Catalog entity, service, optimistic locking | 5 | .planning/phases/05-inventory-management/05-01-SUMMARY.md |
+| 2026-06-25 | Plan 05-02 executed — Catalog events, controller, MCP tools | 5 | .planning/phases/05-inventory-management/05-02-SUMMARY.md |
+| 2026-06-25 | Plan 05-03 executed — Order cancel flow, remove mock data | 5 | .planning/phases/05-inventory-management/05-03-SUMMARY.md |
+| 2026-06-25 | Plan 05-04 executed — Frontend inventory UI | 5 | .planning/phases/05-inventory-management/05-04-SUMMARY.md |
 
 ## Current State
 
-**Phase 1 Status**: All plans complete, ready for Phase 2
+**Phase 5 Status**: All plans complete
 **Blocking Issues**: None
-**Last Activity**: 2026-06-21 - Plan 01-04 executed (2 tasks, 15 files created)
-
-## Resumed From
-
-- **Last stopped at**: Plan 01-04 complete
-- **Next plan**: Phase 2 planning
+**Last Activity**: 2026-06-25 — All 4 inventory management plans executed
 
 ## Decisions
 
-- Used `spring-cloud-starter-stream-rabbit` instead of `spring-cloud-starter-stream` for RabbitMQ binder
-- Duplicated `AccountTier` enum in catalog-service to avoid cross-service Maven dependency
-- Used Spring Cloud Gateway (WebFlux-based) for gateway-service
-- Used `jjwt 0.12.x` with HS256 for JWT token signing
-- Configured 24-hour JWT expiration for session persistence
-- Implemented BCrypt password hashing for security
-- Created CustomUserDetailsService for JWT authentication integration
-- Used static initialization block for product data maps (Map.of() limit is 10 entries)
-- Implemented mock product validation in OrderService (catalog-service integration deferred)
-- Used StreamBridge for event publishing via Spring Cloud Stream
+- INV-01: Async event-driven decrement via RabbitMQ (OrderCreatedEvent consumer in catalog-service)
+- INV-02: Soft reservation model (reservedInventory field, reserve on order, commit on shipment)
+- INV-03: Optimistic locking (@Version on Product) with @Retryable(3 attempts, 100ms backoff)
+- INV-04: Full cancel+restore (CANCELLED status, OrderCancelledEvent, POST /api/orders/{id}/cancel)
+- INV-05: Low-stock threshold (reorderPoint field), GET /api/catalog/products/low-stock, dashboard widget, MCP tools
+- INV-06: Admin delta-based adjustInventory with PATCH /api/catalog/products/{sku}/inventory
+- Used RestTemplate with fallback for order-service price lookup (catalog-service REST call)
+- In-memory Set<UUID> for idempotent event processing in OrderEventConsumer
+- OrderCancelledEvent uses wasConfirmed flag to distinguish PENDING vs CONFIRMED cancel behavior
 
 ## Metrics
 
 | Plan | Duration | Tasks | Files | Commits |
 |------|----------|-------|-------|---------|
-| 01-01 | 12min | 3 | 23 | 3 |
-| 01-02 | 8min | 2 | 15 | 2 |
-| 01-03 | 15min | 2 | 12 | 2 |
-| 01-04 | 12min | 2 | 15 | 2 |
-
-## Session
-
-**Last session:** 2026-06-21T14:23:53.859Z
-**Stopped at:** Phase 02 execution complete — all 3 plans done
-**Resume file:** .planning/phases/02-angular-frontend/02-03-SUMMARY.md
+| 05-01 | ~15min | 5 | 5 | 5 |
+| 05-02 | ~15min | 6 | 7 | 7 |
+| 05-03 | ~10min | 6 | 7 | 5 |
+| 05-04 | ~15min | 7 | 10 | 7 |
