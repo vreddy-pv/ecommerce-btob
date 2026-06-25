@@ -27,6 +27,10 @@ spring:
       maximum-pool-size: 20
       minimum-idle: 5
 
+  sql:
+    init:
+      mode: always
+
   jpa:
     hibernate:
       ddl-auto: create

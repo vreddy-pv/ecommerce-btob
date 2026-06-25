@@ -53,6 +53,10 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  sql:
+    init:
+      mode: always
+
 eureka:
   instance:
     prefer-ip-address: true
