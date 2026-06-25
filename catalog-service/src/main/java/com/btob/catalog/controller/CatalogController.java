@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -90,14 +91,36 @@ public class CatalogController {
     }
 
     /**
-     * Update inventory level.
-     * PUT /api/catalog/products/{sku}/inventory
+     * Get low-stock products — available inventory at or below reorder point.
+     * GET /api/catalog/products/low-stock
      */
-    @PutMapping("/products/{sku}/inventory")
-    public ResponseEntity<Void> updateInventory(
+    @GetMapping("/products/low-stock")
+    public ResponseEntity<List<ProductDto>> getLowStockProducts() {
+        List<ProductDto> lowStockProducts = catalogService.getLowStockProducts();
+        return ResponseEntity.ok(lowStockProducts);
+    }
+
+    /**
+     * Get available stock count for a product.
+     * GET /api/catalog/products/{sku}/stock
+     */
+    @GetMapping("/products/{sku}/stock")
+    public ResponseEntity<Map<String, Integer>> getStock(@PathVariable String sku) {
+        int available = catalogService.getAvailableStock(sku);
+        return ResponseEntity.ok(Map.of("available", available));
+    }
+
+    /**
+     * Adjust inventory level by delta (admin restock or write-off).
+     * Positive delta = restock, negative delta = write-off.
+     * PATCH /api/catalog/products/{sku}/inventory
+     */
+    @PatchMapping("/products/{sku}/inventory")
+    public ResponseEntity<ProductDto> adjustInventory(
             @PathVariable String sku,
-            @RequestParam int quantity) {
-        catalogService.updateInventory(sku, quantity);
-        return ResponseEntity.ok().build();
+            @RequestBody Map<String, Integer> body) {
+        int delta = body.getOrDefault("delta", 0);
+        ProductDto updatedProduct = catalogService.adjustInventory(sku, delta);
+        return ResponseEntity.ok(updatedProduct);
     }
 }
